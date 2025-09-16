@@ -1,0 +1,268 @@
+import streamlit as st
+import pandas as pd
+from io import StringIO
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+import scipy as sp
+
+st.title("Data Analysis and Model Training App")
+
+uploaded_file = st.file_uploader("Choose a file")
+if uploaded_file is not None:
+    df = pd.read_csv(uploaded_file)
+    st.success("File uploaded successfully!")
+    st.write("Basic Information of the DataFrame:") #display info
+    
+    st.dataframe(df.describe())
+    # Drop the 'Unnamed: 0' column if present
+    if 'Unnamed: 0' in df.columns:
+        df = df.drop('Unnamed: 0', axis=1)
+
+
+from sklearn.datasets import fetch_openml
+
+wages = fetch_openml(data_id=534, as_frame=True)
+df_wages = wages.data
+target_wage = wages.target
+
+#display(df_wages.head())
+st.dataframe(df_wages.head())
+st.dataframe(target_wage.head())
+
+#Visualize numerical feature distributions
+#Subtask:
+#Create and display histograms or box plots for numerical features in the dataset to understand their distributions.
+
+
+ # Display basic statistics BELOW CODE IS NOT NEEDED ANYMORE
+#st.write("Basic Statistics of the DataFrame:")
+#st.dataframe(df.describe())
+
+
+if "step" not in st.session_state:
+    st.session_state.step = 0
+
+if st.session_state.step == 0:
+    if st.button("YES - Proceed to Data Analysis", key="step0"):
+        st.session_state.step = 1
+    else:
+        st.info("Click YES to proceed with data analysis and model training.")
+        st.stop()
+
+if st.session_state.step >= 1:
+    # Numerical feature visualization
+    numerical_cols = df_wages.select_dtypes(include=['int64', 'float64']).columns
+    st.header("Visualize numerical feature distributions")
+    for col in numerical_cols:
+        plt.figure(figsize=(8, 6))
+        plt.hist(df_wages[col], bins=20)
+        plt.title(f'Distribution of {col}')
+        plt.xlabel(col)
+        plt.ylabel('Frequency')
+        st.pyplot(plt)
+
+    if st.session_state.step == 1:
+        if st.button("YES - Proceed to Categorical Features", key="step1"):
+            st.session_state.step = 2
+        else:
+            st.info("Click YES to proceed to categorical feature distributions.")
+            st.stop()
+
+
+import matplotlib.pyplot as plt
+# proceed = st.button("YES - Proceed-data analysis")
+# if not proceed:
+#     st.info("Click YES to proceed with data analysis and model training.")
+#     st.stop()
+
+numerical_cols = df_wages.select_dtypes(include=['int64', 'float64']).columns
+st.header("Visualize numerical feature distributions")
+for col in numerical_cols:
+    plt.figure(figsize=(8, 6))
+    plt.hist(df_wages[col], bins=20)
+    plt.title(f'Distribution of {col}')
+    plt.xlabel(col)
+    plt.ylabel('Frequency')
+    plt.show()
+    st.pyplot(plt)
+
+import matplotlib.pyplot as plt
+proceed1 = st.button("YES - Visualize categorical feature")
+if not proceed1:
+    st.info("Click YES to proceed TO Visualize categorical feature distributions")
+    st.stop()
+
+categorical_cols = df_wages.select_dtypes(include=['object', 'category']).columns
+st.header("Visualize categorical feature distributions")
+for col in categorical_cols:
+    plt.figure(figsize=(10, 6))
+    sns.countplot(data=df_wages, x=col)
+    plt.title(f'Distribution of {col}')
+    plt.xlabel(col)
+    plt.ylabel('Count')
+    plt.xticks(rotation=45, ha='right')
+    plt.tight_layout()
+    plt.show()
+    st.pyplot(plt)
+#Visualize relationships between features and target variable
+
+import matplotlib.pyplot as plt
+#proceed2 = st.button("YES - Proceed")
+#if not proceed2:
+    #st.info("Click YES to proceed TO Visualize relationships with the target NUMERICAL variable")
+    #st.stop()
+
+st.header("Visualize relationships with the target NUMERICAL variables")
+
+numerical_cols = df_wages.select_dtypes(include=['int64', 'float64']).columns
+
+for col in numerical_cols:
+    plt.figure(figsize=(8, 6))
+    sns.scatterplot(data=df_wages, x=col, y=target_wage)
+    plt.title(f'Relationship between {col} and WAGE')
+    plt.xlabel(col)
+    plt.ylabel('WAGE')
+    plt.show()
+    st.pyplot(plt)
+
+categorical_cols = df_wages.select_dtypes(include=['object', 'category']).columns
+# proceed3 = st.button("YES - Proceed")
+# if not proceed3:
+#     st.info("Click YES to proceed TO Visualize relationships with the target CATEGORICAL variable")
+#     st.stop()
+
+st.header("Visualize relationships with the target CATEGORICAL variables")
+for col in categorical_cols:
+    plt.figure(figsize=(10, 6))
+    sns.boxplot(data=df_wages, x=col, y=target_wage)
+    plt.title(f'Relationship between {col} and WAGE')
+    plt.xlabel(col)
+    plt.ylabel('WAGE')
+    plt.xticks(rotation=45, ha='right')
+    plt.tight_layout()
+    plt.show()
+    st.pyplot(plt)
+
+
+# proceed4 = st.button("YES - Proceed")
+# if not proceed4:
+#     st.info("Click YES to proceed TO Display Model Training & Pairwise relationships of numerical features")
+#     st.stop()
+
+st.header("Display Model Training & Pairwise relationships of numerical features")
+from sklearn.model_selection import train_test_split
+
+# Assuming X is df_wages and y is target_wage based on previous cells
+X = df_wages
+y = target_wage
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
+
+# Select only numerical columns for the pairplot
+X_train_numerical = X_train.select_dtypes(include=['int64', 'float64'])
+
+train_dataset = X_train_numerical.copy()
+train_dataset.insert(0, "WAGE", y_train)
+st.write("MODEL TARINING DONE HERE")
+
+# proceed5 = st.button("YES - Proceed")
+# if not proceed5:
+#     st.info("Click YES to proceed TO Display Pairwise relationships of numerical features in the training set")
+#     st.stop()
+
+st.write("Pairwise relationships of numerical features in the training set")
+# Create the pairplot
+fig = sns.pairplot(train_dataset, kind="reg", diag_kind="kde")
+plt.suptitle("Pairwise relationships of numerical features in the training set", y=1.02) # Add a title to the plot
+st.pyplot(fig.fig) # Pass the figure object to st.pyplot()
+plt.close(fig.fig) # Close the figure to free up memory
+
+
+
+#Load the dataset
+from sklearn.datasets import fetch_openml
+st.write("Information of the Survey dataset")
+survey = fetch_openml(data_id=534, as_frame=True)
+st.write(survey.data.info())
+st.dataframe(survey.data.head())
+
+#processing the data before training the model
+from sklearn.compose import make_column_transformer
+from sklearn.preprocessing import OneHotEncoder
+
+categorical_columns = ["RACE", "OCCUPATION", "SECTOR", "MARR", "UNION", "SEX", "SOUTH"]
+numerical_columns = ["EDUCATION", "EXPERIENCE", "AGE"]
+
+preprocessor = make_column_transformer(
+    (OneHotEncoder(drop="if_binary"), categorical_columns),
+    remainder="passthrough",
+    verbose_feature_names_out=False,  # avoid to prepend the preprocessor names
+)
+
+from sklearn.compose import TransformedTargetRegressor
+from sklearn.linear_model import Ridge
+from sklearn.pipeline import make_pipeline
+import numpy as np
+import scipy as sp
+
+model = make_pipeline(
+    preprocessor,
+    TransformedTargetRegressor(
+        regressor=Ridge(alpha=1e-10), func=np.log10, inverse_func=sp.special.exp10
+    ),
+)
+model.fit(X_train, y_train)
+st.write("Model training completed.")
+
+#calculate predition score and display it
+from sklearn.metrics import median_absolute_error, PredictionErrorDisplay
+
+mae_train = median_absolute_error(y_train, model.predict(X_train))
+y_pred = model.predict(X_test)
+mae_test = median_absolute_error(y_test, y_pred)
+scores = {
+    "MedAE on training set": f"{mae_train:.2f} $/hour",
+    "MedAE on testing set": f"{mae_test:.2f} $/hour",
+}
+st.write(scores)
+
+# proceed6 = st.button("YES - Proceed")
+# if not proceed6:
+#     st.info("Click YES to proceed TO Display the prediction error plot")
+#     st.stop()
+
+st.header("Display the prediction error plot")
+#display the prediction error plot
+import matplotlib.pyplot as plt
+from sklearn.metrics import PredictionErrorDisplay
+
+_, ax = plt.subplots(figsize=(5, 5))
+prediction_error_display = PredictionErrorDisplay.from_predictions(
+    y_test, y_pred, kind="actual_vs_predicted", ax=ax, scatter_kwargs={"alpha": 0.5}
+)
+ax.set_title("Ridge model, small regularization")
+for name, score in scores.items():
+    ax.plot([], [], " ", label=f"{name}: {score}")
+ax.legend(loc="upper left")
+plt.tight_layout()
+plt.show()
+st.pyplot(plt)
+
+
+
+# proceed7 = st.button("YES - Proceed")
+# if not proceed7:
+#     st.info("Click YES to proceed TO Display THE MODEL COEFFICIENTS")
+#     st.stop()
+
+st.header("MODEL COEFFICIENTS")
+feature_names = model[:-1].get_feature_names_out()
+
+coefs = pd.DataFrame(
+    model[-1].regressor_.coef_,
+    columns=["Coefficients"],
+    index=feature_names,
+)
+
+st.write(coefs)
