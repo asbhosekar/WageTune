@@ -75,6 +75,22 @@ Ashish Bhosekar
 Code
 ---
 
-✨ This version is concise at the top (Quick Start + Features), detailed in the middle (Highlights, Troubleshooting, Roadmap), and professional at the bottom (Acceptance Criteria + Author). It reads like a proper open‑source project page.
+## 📌 Features
+- Ridge Regression with α tuning
+- Target transforms (`identity`, `log10`, `log1p`)
+- Cross‑validation to inspect coefficient variability
+- Metrics dashboard (MAE, RMSE, MedAE, R²)
+- Stability check with configurable tolerances
+- “Explain this result” button with remediation steps
 
-Would you like me to also suggest a **short GitHub tagline** (the one‑liner
+---
+
+## 📊 App Screenshot
+Here’s a preview of WageTune in action:
+<img width="800" alt="WageTune Screenshot" src="https://github.com/user-attachments/assets/df476102-0225-4cee-be13-dd0705c1e0d3" />
+
+- **Left panel**: Retrain controls (Ridge alpha, target transform, stability thresholds)  
+- **Center**: Predicted vs actual wages scatter plot with performance metrics  
+- **Bottom**: Stakeholder takeaways with actionable insights
+
+
