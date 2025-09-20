@@ -88,9 +88,10 @@ Code
 ## 📊 App Screenshot
 Here’s a preview of WageTune in action:
 <img width="800" alt="WageTune Screenshot" src="https://github.com/user-attachments/assets/df476102-0225-4cee-be13-dd0705c1e0d3" />
+https://github.com/user-attachments/assets/df476102-0225-4cee-be13-dd0705c1e0d3
 
-- **Left panel**: Retrain controls (Ridge alpha, target transform, stability thresholds)  
-- **Center**: Predicted vs actual wages scatter plot with performance metrics  
-- **Bottom**: Stakeholder takeaways with actionable insights
+- Left panel: Retrain controls (Ridge alpha, target transform, stability thresholds)  
+- Center: Predicted vs actual wages scatter plot with performance metrics  
+- Bottom: Stakeholder takeaways with actionable insights
 
 
