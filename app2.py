@@ -1,3 +1,4 @@
+#Complete All Imports and Prerequisites 
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -53,7 +54,7 @@ def update_latest_metrics(mae_train, rmse_train, medae_train, r2_train, mae_test
         "r2_test": float(r2_test),
     }
 
-# Load dataset
+# Load dataset with exception handling 
 try:
     wages = fetch_openml(data_id=534, as_frame=True)
     df_wages = wages.data
@@ -63,7 +64,7 @@ except Exception as e:
     st.exception(e)
     st.stop()
 
-# Sidebar: hyperparameter controls
+# Sidebar: hyperparameter controls to set the parameter tuning
 st.sidebar.header("Retrain controls")
 # Enforce non-negative alpha at the widget level
 alpha = st.sidebar.number_input("Ridge alpha", value=1e-10, min_value=0.0, format="%.12g")
@@ -175,7 +176,7 @@ def ensure_model_trained(alpha=None, transform_choice=None):
         return
 
     categorical_columns = ["RACE", "OCCUPATION", "SECTOR", "MARR", "UNION", "SEX", "SOUTH"]
-    # Preprocessing: One-hot encode categorical columns, passthrough numeric
+    # Preprocessing: One-hot encode categorical columns, pass-through numeric
     # columns. We set `drop='if_binary'` to avoid collinearity for binary
     # categories. `verbose_feature_names_out=False` keeps feature names simple.
     preprocessor = make_column_transformer(
@@ -188,7 +189,7 @@ def ensure_model_trained(alpha=None, transform_choice=None):
     # `TransformedTargetRegressor` to apply a monotonic transform to the
     # target variable during training and invert predictions afterwards.
     # This is useful when the target is skewed (e.g., wages) — common
-    # transforms are `log10` and `log1p`. When `identity` is selected we
+    # transforms are `log10` and `log1p`. When `identity` is selected, we
     # use a plain Ridge regressor (no target transform).
     func, inverse = _get_transform_funcs(transform_choice)
     if transform_choice == "identity" or func is None:
